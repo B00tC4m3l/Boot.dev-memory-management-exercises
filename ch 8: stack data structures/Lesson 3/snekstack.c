@@ -3,23 +3,31 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-void stack_push(stack_t *stack, void *obj) {
+void *stack_pop(stack_t *stack) {
   // ?
-  if(stack->count == stack->capacity){
-    int oldStackCapacity = stack->capacity;
-    stack->capacity = stack->capacity * 2;
-    void *newStack = realloc(stack->data, stack->capacity * sizeof(void**));
-    if(newStack == NULL){
-      stack->capacity = oldStackCapacity;
-      return;
+  if(stack->count == 0){
+    return NULL;
+  }
+  stack->count--;
+  return stack->data[stack->count];
+}
+
+
+void stack_push(stack_t *stack, void *obj) {
+  if (stack->count == stack->capacity) {
+    stack->capacity *= 2;
+    void **temp = realloc(stack->data, stack->capacity * sizeof(void *));
+    if (temp == NULL) {
+      stack->capacity /= 2;
+
+      exit(1);
     }
-    stack->data = newStack;
+    stack->data = temp;
   }
   stack->data[stack->count] = obj;
   stack->count++;
+  return;
 }
-
-// don't touch below this line
 
 stack_t *stack_new(size_t capacity) {
   stack_t *stack = malloc(sizeof(stack_t));
